@@ -8,6 +8,7 @@ Steps that you have to follow in order to have a working setup:
 4. Now you should be able to install Keras, using the same Command Prompt you opened earlier, run the command "pip install keras"
 5. After this you should be able to also install NumPy with the help of instruction "pip install numpy"
 6. Module Pillow is needed aswell, make sure you install the latest version of it, so I advise you to unistall it first ("pip uninstall Pillow") and the install it again ("pip install Pillow")
+7. CV2 will be requiered aswell, so make sure you run ("conda install opencv") and imutilis ("conda install -c pjamesjoyce imutils")
 
 This should be enough so you could compile our Narcis.py file.
 
