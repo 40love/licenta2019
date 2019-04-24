@@ -55,7 +55,7 @@ def inputImagine(imagine):
     y = numpy.array(y)
     return img,y
 
-digit_input = Input(shape=(dimensiune[0], dimensiune[1],1), name='main_input')
+digit_input = Input(shape=(dimensiune[0], dimensiune[1]), name='main_input')
 x=Conv2D(40,(5,5),activation='relu',kernel_regularizer=regularizers.l2(0.01), name='main_input2')(digit_input)
 x=MaxPooling2D((2,2))(x)
 x=Conv2D(40,(5,5),activation='relu',kernel_regularizer=regularizers.l2(0.01), name='main_input3')(x)
