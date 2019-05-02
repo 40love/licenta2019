@@ -6,9 +6,10 @@ Created on Apr 24, 2019
 from PIL import Image
 import numpy
 import os
+from builtins import isinstance
 cuvantCheie ="copy"
 directorImagini="..\..\Radiografii_DB"
-dimensiune = (600,600)
+dimensiune = (200,200)
 
 def tranformaImagine(imagine):
     imagine=Image.open(imagine).convert('L')
@@ -34,10 +35,10 @@ def getPixeliOutput(fisier):
     lower_red = numpy.array([0,100,100])
     upper_red = numpy.array([179, 255, 255])
     mask = cv2.inRange(hsv, lower_red, upper_red)
-    cv2.imshow("HSV", hsv)
-    cv2.waitKey(0)
-    cv2.imshow("Mask", mask)
-    cv2.waitKey(0)
+    #cv2.imshow("HSV", hsv)
+   # cv2.waitKey(0)
+   # cv2.imshow("Mask", mask)
+   # cv2.waitKey(0)
     
     blurred = cv2.GaussianBlur(mask, (5, 5), 0)
     thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]
@@ -60,8 +61,8 @@ def getPixeliOutput(fisier):
     
     print(fisier)  
     print(output)
-    cv2.imshow("Mask", img)
-    cv2.waitKey(0)
+    #cv2.imshow("Mask", img)
+    #cv2.waitKey(0)
     return output
 
 def prelucreazaImagineOutput(fisier):
@@ -121,10 +122,12 @@ def mainInput():
     intrare = []
     iesire = []
     for valori in dictionarImagini.values():
-        intrare.append(valori[0])
-        iesire.append(valori[1])
+        if(not isinstance(valori[0],int)) and (not isinstance(valori[1], int)):
+            intrare.append(valori[0])
+            iesire.append(valori[1])
     intrare = numpy.array(intrare)
     iesire =numpy.array(iesire)
+    print(len(intrare), len(iesire))
     return intrare,iesire
 
 #mainInput()

@@ -7,7 +7,7 @@ from keras.models import Sequential, Model
 from keras.layers import Dense, Activation, Conv2D, MaxPooling2D, Input,Flatten,Reshape
 from keras import optimizers
 from keras import  regularizers
-dimensiune = (600,600)
+dimensiune = (200,200)
 def getModel():
     global model2
     return model2
