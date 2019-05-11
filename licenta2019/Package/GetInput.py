@@ -7,15 +7,15 @@ from PIL import Image
 import numpy
 import os
 from builtins import isinstance
-cuvantCheie ="copy"
-directorImagini="..\..\Radiografii_DB"
+
+directorImaginiInput="..\..\Radiografii_DB"
+directorImaginiOutput="..\..\Radiografii_DB_Output"
 dimensiune = (200,200)
 
 def tranformaImagine(imagine):
     imagine=Image.open(imagine).convert('L')
     #image = color.rgb2gray(imagine)
     image_resized = imagine.resize(dimensiune,Image.ANTIALIAS)
-    image_resized.save("dinti4.png")
     pixels = list(image_resized.getdata())
     width, height = image_resized.size
     pixels = [pixels[i * width:(i + 1) * width] for i in range(height)]
@@ -66,9 +66,9 @@ def getPixeliOutput(fisier):
     return output
 
 def prelucreazaImagineOutput(fisier):
-    numeComplet = os.path.join(directorImagini,fisier)
+    numeComplet = os.path.join(directorImaginiOutput,fisier)
     pixeliOutput = getPixeliOutput(numeComplet)
-    cheieDictionar = fisier.split(".")[0].split(" - Copy")[0]
+    cheieDictionar = fisier.split(".")[0]
     if cheieDictionar not in dictionarImagini:
         dictionarImagini[cheieDictionar]=[0,0]
     y_t = []
@@ -81,7 +81,7 @@ def prelucreazaImagineOutput(fisier):
     return y_t
 
 def prelucreazaImagineInput(fisier):
-    numeComplet = os.path.join(directorImagini,fisier)
+    numeComplet = os.path.join(directorImaginiInput,fisier)
     img = tranformaImagine(numeComplet)
     img=numpy.reshape(img,(dimensiune[0],dimensiune[1],1))
     if fisier.split(".")[0] not in dictionarImagini:
@@ -90,23 +90,14 @@ def prelucreazaImagineInput(fisier):
     dictionarImagini[fisier.split(".")[0]][0]=img
     return img
     
-    
-def prelucreazaImagineMain(fisier):
-    if fisier.split(".")[0].endswith("Copy"):
-        prelucreazaImagineOutput(fisier)
-    else:
-        prelucreazaImagineInput(fisier)
 
 dictionarImagini={}  #dictionar[NumeImagine] = [intrarePiexeli,iesirePixelCarii]
 
-def resizePoza(fisier):
+def resizePoza(directorImagini,fisier):
     numeComplet = os.path.join(directorImagini,fisier)
     imagine=Image.open(numeComplet)#.convert('L')
     image_resized = imagine.resize(dimensiune,Image.ANTIALIAS)
-    if fisier.split('.')[0].endswith("Copy"):
-        numeOutput = fisier.split(" - Copy")[0] +"aux" +" - Copy"+ fisier.split(" - Copy")[1]
-    else:
-        numeOutput = fisier.split(".")[0] + "aux"+"."+fisier.split(".")[1]
+    numeOutput = fisier.split(".")[0] + "aux"+"."+fisier.split(".")[1]
     numeComplet = os.path.join(directorImagini,numeOutput)
     image_resized.save(numeComplet)
     return numeOutput
@@ -114,11 +105,18 @@ def resizePoza(fisier):
 def mainInput():
     from os import listdir
     from os.path import isfile, join
-    onlyfiles = [f for f in listdir(directorImagini) if isfile(join(directorImagini, f))]
+    onlyfiles = [f for f in listdir(directorImaginiInput) if isfile(join(directorImaginiInput, f))]
     for fisier in onlyfiles:
         if (fisier.endswith("jpg") or fisier.endswith("png") ) and "aux" not in fisier:
-            fisier = resizePoza(fisier)
-            prelucreazaImagineMain(fisier)
+            fisier = resizePoza(directorImaginiInput,fisier)
+            prelucreazaImagineInput(fisier)
+            
+    onlyfiles = [f for f in listdir(directorImaginiOutput) if isfile(join(directorImaginiOutput, f))]
+    for fisier in onlyfiles:
+        if (fisier.endswith("jpg") or fisier.endswith("png") ) and "aux" not in fisier:
+            fisier = resizePoza(directorImaginiOutput,fisier)
+            prelucreazaImagineOutput(fisier)
+            
     intrare = []
     iesire = []
     for valori in dictionarImagini.values():
