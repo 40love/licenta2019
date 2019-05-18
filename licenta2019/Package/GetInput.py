@@ -10,9 +10,8 @@ from builtins import isinstance
 
 directorImaginiInput="..\..\Radiografii_DB"
 directorImaginiOutput="..\..\Radiografii_DB_Output"
-dimensiune = (200,200)
-dimensiuneOut = (50,50)
-factorZoom = dimensiune[0]/dimensiuneOut[0]
+dimensiune = (600,600)
+
 def tranformaImagine(imagine):
     imagine=Image.open(imagine).convert('L')
     #image = color.rgb2gray(imagine)
@@ -36,10 +35,10 @@ def getPixeliOutput(fisier):
     lower_red = numpy.array([0,100,100])
     upper_red = numpy.array([179, 255, 255])
     mask = cv2.inRange(hsv, lower_red, upper_red)
-    #cv2.imshow("HSV", hsv)
-   # cv2.waitKey(0)
-   # cv2.imshow("Mask", mask)
-   # cv2.waitKey(0)
+    ##cv2.imshow("HSV", hsv)
+    ##cv2.waitKey(0)
+    ##cv2.imshow("Mask", mask)
+    ##cv2.waitKey(0)
     
     blurred = cv2.GaussianBlur(mask, (5, 5), 0)
     thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]
@@ -62,27 +61,32 @@ def getPixeliOutput(fisier):
     
     print(fisier)  
     print(output)
-    #cv2.imshow("Mask", img)
+    ##cv2.imshow("Mask", img)
     #cv2.waitKey(0)
     return output
 
-def prelucreazaImagineOutput(fisier):
+def prelucreazaImagineOutputAux(fisier):
     numeComplet = os.path.join(directorImaginiOutput,fisier)
     pixeliOutput = getPixeliOutput(numeComplet)
     cheieDictionar = fisier.split(".")[0]
     if cheieDictionar not in dictionarImagini:
         dictionarImagini[cheieDictionar]=[0,0]
     y_t = []
-    y = [-1]*dimensiuneOut[0]
-    for _ in range(dimensiuneOut[1]):
+    y = [0]*dimensiune[0]
+    for _ in range(dimensiune[1]):
         y_t.append(y)
     for pixel in pixeliOutput:
-        y_t[int(pixel[0]/factorZoom)][int(pixel[1]/factorZoom)] = 1
-    
+        y_t[pixel[0]][pixel[1]] = 1
     dictionarImagini[cheieDictionar][1]=y_t
     return y_t
 
-def prelucreazaImagineInput(fisier):
+def prelucreazaImagineOutput(fisier):
+    fisierMirror = mirrorImage(fisier,directorImaginiOutput)
+    
+    prelucreazaImagineOutputAux(fisier)
+    prelucreazaImagineOutputAux(fisierMirror)
+    
+def prelucreazaImagineInputAux(fisier):
     numeComplet = os.path.join(directorImaginiInput,fisier)
     img = tranformaImagine(numeComplet)
     img=numpy.reshape(img,(dimensiune[0],dimensiune[1],1))
@@ -92,6 +96,20 @@ def prelucreazaImagineInput(fisier):
     dictionarImagini[fisier.split(".")[0]][0]=img
     return img
     
+    
+def mirrorImage(fisier,director):
+    numeComplet = os.path.join(director,fisier)
+    image_obj = Image.open(numeComplet)
+    rotated_image = image_obj.transpose(Image.FLIP_LEFT_RIGHT)
+    fisierMirror = fisier.split(".")[0]+"mirror."+fisier.split(".")[1]
+    numeCompletMirror = os.path.join(director,fisierMirror)
+    rotated_image.save(numeCompletMirror)
+    return fisierMirror
+
+def prelucreazaImagineInput(fisier):
+    fisierMirror = mirrorImage(fisier,directorImaginiInput)
+    prelucreazaImagineInputAux(fisier)
+    prelucreazaImagineInputAux(fisierMirror)
 
 dictionarImagini={}  #dictionar[NumeImagine] = [intrarePiexeli,iesirePixelCarii]
 
@@ -130,4 +148,4 @@ def mainInput():
     print(len(intrare), len(iesire))
     return intrare,iesire
 
-#mainInput()
+mainInput()
