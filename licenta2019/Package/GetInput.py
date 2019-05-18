@@ -11,7 +11,8 @@ from builtins import isinstance
 directorImaginiInput="..\..\Radiografii_DB"
 directorImaginiOutput="..\..\Radiografii_DB_Output"
 dimensiune = (200,200)
-
+dimensiuneOut = (50,50)
+factorZoom = dimensiune[0]/dimensiuneOut[0]
 def tranformaImagine(imagine):
     imagine=Image.open(imagine).convert('L')
     #image = color.rgb2gray(imagine)
@@ -72,11 +73,12 @@ def prelucreazaImagineOutput(fisier):
     if cheieDictionar not in dictionarImagini:
         dictionarImagini[cheieDictionar]=[0,0]
     y_t = []
-    y = [0]*dimensiune[0]
-    for _ in range(dimensiune[1]):
+    y = [-1]*dimensiuneOut[0]
+    for _ in range(dimensiuneOut[1]):
         y_t.append(y)
     for pixel in pixeliOutput:
-        y_t[pixel[0]][pixel[1]] = 1
+        y_t[int(pixel[0]/factorZoom)][int(pixel[1]/factorZoom)] = 1
+    
     dictionarImagini[cheieDictionar][1]=y_t
     return y_t
 

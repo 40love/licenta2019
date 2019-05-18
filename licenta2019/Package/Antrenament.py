@@ -10,6 +10,8 @@ from Package.GetInput import mainInput
 from Package import Retea
 from Crypto.Random.random import shuffle
 import tensorflow as tf
+from Package.MainScript import analizeazaPoza
+from keras.models import model_from_json
 
 def mainAntrenament() :
     #session = tf.Session(config=tf.ConfigProto(log_device_placement=True))
@@ -18,8 +20,8 @@ def mainAntrenament() :
     #iesire = numpy.tile(iesire, 10)
     model = Retea.getModel()
     
-    model.fit (intrare,iesire,epochs=20,batch_size=128,shuffle=True,validation_split=0.1)
-    
+    model.fit (intrare,iesire,epochs=10,batch_size=10,shuffle=True,validation_split=0.1)
+    salveazaModel(model)
 
 #folder = r'C:\Users\PITA\git\licenta2019\Radiografii_DB'
 def  deleteAuxFiles(folder):
@@ -35,7 +37,30 @@ def  deleteAuxFiles(folder):
             print(e)
     print("Done")
     
+   
+   
+def salveazaModel(model):     
+        # serialize model to JSON
+        model_json = model.to_json()
+        with open("model.json", "w") as json_file:
+            json_file.write(model_json)
+        # serialize weights to HDF5
+        model.save_weights("model.h5")
+        print("Saved model to disk")
+ 
+def incarcaModel():
+    # load json and create model
+    json_file = open('model.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    loaded_model = model_from_json(loaded_model_json)
+    # load weights into new model
+    loaded_model.load_weights("model.h5")
+    print("Loaded model from disk")
+    return loaded_model
+    
+
+mainAntrenament()
 deleteAuxFiles("..\..\Radiografii_DB") 
 deleteAuxFiles("..\..\Radiografii_DB_Output") 
-
-#mainAntrenament()
+analizeazaPoza(r"C:\Narcis\repos\licenta2019\Radiografii_DB\PHOTO-2019-04-20-15-56-23.jpg")
